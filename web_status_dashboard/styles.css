@@ -1,0 +1,124 @@
+:root {
+  --bg: #0b1020;
+  --panel: #121a2f;
+  --text: #e6edf3;
+  --muted: #9aa7b1;
+  --card: #0f1629;
+  --green-bg: #0e2a1f;
+  --green: #2dd4bf;
+  --red-bg: #2a1313;
+  --red: #f87171;
+  --border: #1f2a44;
+  --accent: #8b5cf6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px clamp(16px, 4vw, 32px);
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(139,92,246,0.08), transparent 60%);
+}
+
+.page-header h1 {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(18px, 3vw, 22px);
+  letter-spacing: 0.2px;
+}
+
+.status-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.status-bar .error {
+  color: var(--red);
+}
+
+main {
+  padding: 20px clamp(16px, 4vw, 32px) 40px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.empty {
+  color: var(--muted);
+  padding: 20px;
+}
+
+.card {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+}
+
+.card .name {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.card .meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.state-tag {
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.card.enabled {
+  background: linear-gradient(180deg, rgba(45,212,191,0.08), transparent 40%), var(--card);
+}
+.card.enabled .state-tag {
+  color: var(--green);
+  border-color: rgba(45,212,191,0.35);
+  background: rgba(13,148,136,0.08);
+}
+
+.card.disabled {
+  background: linear-gradient(180deg, rgba(248,113,113,0.08), transparent 40%), var(--card);
+}
+.card.disabled .state-tag {
+  color: var(--red);
+  border-color: rgba(248,113,113,0.35);
+  background: rgba(127,29,29,0.08);
+}
+
+.updated-at {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+

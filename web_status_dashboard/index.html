@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NT8 Strategy Status</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Live view of NinjaTrader 8 strategy enable/disable status" />
+  </head>
+  <body>
+    <header class="page-header">
+      <h1>NT8 Strategy Status</h1>
+      <div class="status-bar">
+        <span id="last-updated">—</span>
+        <span id="status-msg"></span>
+      </div>
+    </header>
+
+    <main>
+      <section id="grid" class="grid" aria-live="polite" aria-busy="true"></section>
+    </main>
+
+    <!-- Public config (anon key only). You can safely commit anon keys. -->
+    <script>
+      window.SUPABASE_STATUS_CONFIG = {
+        url: "https://dqkdljbuqtlxnkcunkmz.supabase.co",
+        anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxa2RsamJ1cXRseG5rY3Vua216Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU2MDQ3MDEsImV4cCI6MjA3MTE4MDcwMX0.Ut3dak3ZNTKjTmGe4T8RE4ZNGjq8ErckNXL4kYT8deE",
+        table: "strategy_status",
+        pollMs: 5000
+      };
+    </script>
+    <!-- Supabase JS v2 UMD -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./status.js"></script>
+  </body>
+  </html>
+
+
