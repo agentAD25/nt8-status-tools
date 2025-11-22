@@ -496,7 +496,9 @@ def run_strategy_status_monitor(cfg: dict):
 
                 # Publish to Supabase
                 try:
-                    publisher.upsert_status(name, instrument, enabled, connection)
+                    # If NT8 logs only 'account' (e.g., 'via Sim101'), prefer that when connection is empty.
+                    conn_for_publish = connection or account
+                    publisher.upsert_status(name, instrument, enabled, conn_for_publish)
                 except Exception as e:
                     print(f"[error] Failed to publish to Supabase: {e}")
 
