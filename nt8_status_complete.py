@@ -44,7 +44,14 @@ DEFAULT_PATTERNS = {
             r"strategy\s+(?P<name>[A-Za-z0-9_\-\.]+)",
         ],
         "instrument": [
-            r"\b(?P<instrument>[A-Z0-9]{1,6}(?:\s+[A-Z]{3}\d{2})?)\b",  # e.g. MNQ DEC25, MGC DEC25, AAPL
+            # on <SYMBOL MMMYY> or on <SYMBOL MM-YY> or on <SYMBOL>
+            r"\bon\s+(?P<instrument>[A-Z]{1,6}\s+(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s?\d{2})\b",
+            r"\bon\s+(?P<instrument>[A-Z]{1,6}\s+\d{2}-\d{2})\b",
+            r"\bfor\s+(?P<instrument>[A-Z]{1,6}\s+(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s?\d{2})\b",
+            r"\bfor\s+(?P<instrument>[A-Z]{1,6}\s+\d{2}-\d{2})\b",
+            # fallback: single-symbol only when preceded by 'on' or 'for'
+            r"\bon\s+(?P<instrument>[A-Z]{1,6})\b",
+            r"\bfor\s+(?P<instrument>[A-Z]{1,6})\b",
         ],
         "connection": [
             r"(?:connection|via)\s+(?P<connection>[\w\s\-\.\#]+)",
@@ -63,6 +70,12 @@ from datetime import datetime, timedelta, timezone
 APP_NAME = "NT8 Strategy Status Watcher"
 HOME = Path.home()
 NT8_LOG_DIR = HOME / "Documents" / "NinjaTrader 8" / "log"
+
+# Valid instrument helpers
+_MONTHS = "JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC"
+_RE_FUT_MMMYY = re.compile(rf"^[A-Z]{{1,6}}\s+(?:{_MONTHS})\s?\d{{2}}$")
+_RE_FUT_MMYY = re.compile(r"^[A-Z]{1,6}\s+\d{2}-\d{2}$")  # e.g., ES 03-26
+_RE_SYMBOL = re.compile(r"^[A-Z]{1,6}$")  # equities/forex symbol
 
 DEFAULT_CONFIG = {
     "email": {
@@ -239,6 +252,14 @@ def fill_missing_fields(line: str, status: dict, patterns: dict):
     for k in ("name", "instrument", "connection", "account"):
         if k in status and isinstance(status[k], str):
             status[k] = status[k].strip(" :;,-[]()")
+    # Validate instrument to avoid false positives like bare years (e.g., "2025")
+    if status.get("instrument"):
+        if not (
+            _RE_FUT_MMMYY.match(status["instrument"])
+            or _RE_FUT_MMYY.match(status["instrument"])
+            or _RE_SYMBOL.match(status["instrument"])
+        ):
+            status["instrument"] = ""
     return status
 
 def atomic_write_json(path: Path, data: dict):
@@ -441,6 +462,9 @@ def run_strategy_status_monitor(cfg: dict):
             connection = status.get("connection", "")
             enabled = bool(status.get("enabled"))
             account = status.get("account", "")
+            # Normalize instrument post-extraction as well
+            if instrument and not (_RE_FUT_MMMYY.match(instrument) or _RE_FUT_MMYY.match(instrument) or _RE_SYMBOL.match(instrument)):
+                instrument = ""
             key = (name, instrument or "")
             prev = statuses.get(key)
 
